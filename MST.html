@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QCM - 125 Questions</title>
+<style>
+  :root {
+    --bg: #f5f7fa;
+    --card: #ffffff;
+    --text: #1a202c;
+    --muted: #718096;
+    --border: #e2e8f0;
+    --primary: #3182ce;
+    --primary-dark: #2b6cb0;
+    --correct: #38a169;
+    --correct-bg: #f0fff4;
+    --wrong: #e53e3e;
+    --wrong-bg: #fff5f5;
+    --selected: #ebf8ff;
+    --selected-border: #3182ce;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 20px;
+  }
+  .container { max-width: 900px; margin: 0 auto; }
+  header {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    position: sticky;
+    top: 10px;
+    z-index: 100;
+  }
+  h1 { font-size: 1.5rem; margin-bottom: 8px; }
+  .subtitle { color: var(--muted); font-size: 0.9rem; }
+  .toolbar {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+    align-items: center;
+  }
+  button {
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-primary { background: var(--primary); color: white; }
+  .btn-primary:hover { background: var(--primary-dark); }
+  .btn-secondary {
+    background: var(--card);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { background: var(--bg); }
+  .score {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--primary);
+    margin-left: auto;
+  }
+  .session-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 32px 0 16px;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #3182ce, #2b6cb0);
+    color: white;
+    border-radius: 10px;
+  }
+  .question {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    border-left: 4px solid transparent;
+    transition: border-color 0.3s;
+  }
+  .question.correct { border-left-color: var(--correct); }
+  .question.wrong { border-left-color: var(--wrong); }
+  .question.unanswered { border-left-color: #cbd5e0; }
+  .q-num {
+    display: inline-block;
+    background: var(--primary);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+  }
+  .q-text { font-weight: 600; margin-bottom: 12px; font-size: 1rem; }
+  .choices { display: flex; flex-direction: column; gap: 8px; }
+  .choice {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .choice:hover { background: var(--bg); }
+  .choice input { margin-top: 4px; accent-color: var(--primary); cursor: pointer; }
+  .choice.selected {
+    background: var(--selected);
+    border-color: var(--selected-border);
+  }
+  .choice.correct-answer {
+    background: var(--correct-bg);
+    border-color: var(--correct);
+    border-width: 2px;
+  }
+  .choice.wrong-answer {
+    background: var(--wrong-bg);
+    border-color: var(--wrong);
+  }
+  .choice.disabled { cursor: default; }
+  .choice.disabled:hover { background: inherit; }
+  .label-letter {
+    font-weight: 700;
+    color: var(--muted);
+    min-width: 24px;
+  }
+  .explanation {
+    margin-top: 12px;
+    padding: 12px 16px;
+    background: #f0fff4;
+    border-left: 3px solid var(--correct);
+    border-radius: 6px;
+    font-size: 0.92rem;
+    color: #22543d;
+    display: none;
+  }
+  .explanation.show { display: block; }
+  .explanation strong { color: #276749; }
+  .badge-result {
+    display: none;
+    margin-top: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 4px;
+    width: fit-content;
+  }
+  .badge-result.show { display: inline-block; }
+  .badge-result.ok { background: var(--correct); color: white; }
+  .badge-result.ko { background: var(--wrong); color: white; }
+  .badge-result.na { background: #a0aec0; color: white; }
+  .footer-note {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin: 40px 0 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+  @media (max-width: 600px) {
+    body { padding: 10px; }
+    header { padding: 16px; }
+    .score { margin-left: 0; width: 100%; text-align: center; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>📝 QCM — 125 Questions</h1>
+    <p class="subtitle">Cochez vos réponses, puis affichez les corrections.</p>
+    <div class="toolbar">
+      <button class="btn-primary" id="btn-show">✅ Afficher les corrections</button>
+      <button class="btn-secondary" id="btn-reset">🔄 Réinitialiser</button>
+      <span class="score" id="score">— / 125</span>
+    </div>
+  </header>
+
+  <div id="questions-container"></div>
+
+  <p class="footer-note">QCM généré à partir du fichier source — Bonne révision !</p>
+</div>
+
+<script>
+/* ============================================================
+   DONNÉES : tableau de questions
+   Chaque question : { q: "texte", choices: ["A) ...", ...], correct: index, exp: "explication" }
+   ============================================================ */
+const SESSIONS = [
+  {
+    title: "Sessions 00 et 01",
+    questions: [
+      { q: "Quelle(s) version(s) de Node.js sont validées pour le cours ?",
+        choices: ["A) v23", "B) v25", "C) v24 ou v22", "D) N'importe laquelle"],
+        correct: 2,
+        exp: "Le cours valide les versions LTS stables (v24 ou v22), pas les versions expérimentales." },
+      { q: "Que fait Metro ?",
+        choices: ["A) Il assemble le JavaScript et le sert à Expo Go", "B) Il compile l'APK", "C) Il exécute le code natif", "D) Il vérifie les types"],
+        correct: 0,
+        exp: "Metro est le bundler JavaScript de React Native/Expo ; il ne compile pas d'APK." },
+      { q: "Une bibliothèque npm contient son propre code natif absent d'Expo Go. Que se passe-t-il ?",
+        choices: ["A) Expo Go le compile", "B) npm installe une version JS", "C) Ça marche, plus lentement", "D) Module natif introuvable : erreur"],
+        correct: 3,
+        exp: "Expo Go ne contient pas tous les modules natifs ; un module absent provoque une erreur." },
+      { q: "Une erreur de type TypeScript :",
+        choices: ["A) bloque l'affichage dans Expo Go", "B) apparaît seulement avec npx tsc --noEmit, l'app tourne quand même", "C) plante Metro", "D) est détectée par Fast Refresh"],
+        correct: 1,
+        exp: "TypeScript est effacé à l'exécution ; les erreurs de type n'empêchent pas Metro de servir l'app." },
+      { q: "Sur iPhone, Expo Go n'ouvre le projet que si :",
+        choices: ["A) le PC est en Ethernet", "B) le PC et l'app utilisent le même compte Expo", "C) Node est en v25", "D) le tunnel est activé"],
+        correct: 1,
+        exp: "Expo Go sur iPhone exige le même compte Expo pour ouvrir le projet (en mode LAN/tunnel)." },
+      { q: "Que signifie email?: string ?",
+        choices: ["A) string | null", "B) string obligatoire", "C) any", "D) string | undefined"],
+        correct: 3,
+        exp: "Le ? rend la propriété optionnelle, donc son type inclut undefined." },
+      { q: "Si found est undefined, que vaut found?.email?.length ?? 0 ?",
+        choices: ["A) 0", "B) erreur", "C) undefined", "D) null"],
+        correct: 0,
+        exp: "?. court-circuite sur undefined, puis ?? 0 renvoie 0." },
+      { q: "count vaut 0. Un onPress exécute deux fois setCount(count + 1). Après le rendu, count vaut :",
+        choices: ["A) 0", "B) 2", "C) 1", "D) 3"],
+        correct: 2,
+        exp: "count est capturé à 0 dans les deux appels ; setCount(0+1) deux fois = 1 (pas de mise à jour cumulative)." },
+      { q: "Pour incrémenter selon l'ancienne valeur, on écrit :",
+        choices: ["A) setCount(count++)", "B) count = count + 1", "C) setCount = count + 1", "D) setCount(v => v + 1)"],
+        correct: 3,
+        exp: "La forme fonctionnelle utilise la valeur la plus récente." },
+      { q: "useEffect(() => {...}) sans tableau de dépendances s'exécute :",
+        choices: ["A) une fois", "B) jamais", "C) après chaque rendu", "D) seulement au démontage"],
+        correct: 2,
+        exp: "Sans tableau de dépendances, l'effet s'exécute à chaque rendu." },
+      { q: "useEffect(..., []) s'exécute :",
+        choices: ["A) après le premier rendu seulement", "B) à chaque rendu", "C) jamais", "D) à chaque changement de props"],
+        correct: 0,
+        exp: "Le tableau vide [] signifie « une seule fois au montage »." },
+      { q: "Quand contactId passe de 1 à 2 avec [contactId] en dépendance :",
+        choices: ["A) effet(2) puis nettoyage(1)", "B) nettoyage(1) puis effet(2)", "C) seulement effet(2)", "D) seulement nettoyage(1)"],
+        correct: 1,
+        exp: "React nettoie l'effet précédent avant d'exécuter le nouvel effet." },
+      { q: "Quelle règle est enfreinte ? if (contact) { const [fav, setFav] = useState(false); }",
+        choices: ["A) hook sans préfixe use", "B) hook non async", "C) hook appelé dans un if", "D) aucune"],
+        correct: 2,
+        exp: "Les hooks doivent être appelés au niveau racine, jamais conditionnellement." },
+      { q: "src/app/(tabs)/settings.tsx répond à l'URL :",
+        choices: ["A) /settings", "B) /(tabs)/settings", "C) /tabs/settings", "D) aucune"],
+        correct: 0,
+        exp: "Les parenthèses (tabs) sont un groupe de routes qui n'apparaît pas dans l'URL." },
+      { q: "Comment lire l'id dans contact/[id].tsx ?",
+        choices: ["A) useRoute()", "B) props.id", "C) window.location", "D) useLocalSearchParams<{id: string}>()"],
+        correct: 3,
+        exp: "C'est l'API Expo Router pour lire les paramètres dynamiques." },
+      { q: "Le paramètre de route id est de type :",
+        choices: ["A) number", "B) string", "C) any", "D) selon le fichier"],
+        correct: 1,
+        exp: "Les paramètres de route sont toujours des chaînes." },
+      { q: "Pourquoi current.push(id) ne met-il pas l'écran à jour ?",
+        choices: ["A) push est interdit", "B) la référence du tableau ne change pas", "C) push est asynchrone", "D) le tableau est en lecture seule"],
+        correct: 1,
+        exp: "React compare les références ; push mute sans changer la référence." },
+      { q: "Rôle de keyExtractor dans FlatList :",
+        choices: ["A) trier", "B) filtrer", "C) paginer", "D) donner une identité stable à chaque ligne"],
+        correct: 3,
+        exp: "keyExtractor fournit une clé unique pour le rendu des items." },
+      { q: "Équivalent React Native de LazyColumn :",
+        choices: ["A) FlatList", "B) ScrollView", "C) Column", "D) View"],
+        correct: 0,
+        exp: "FlatList est l'équivalent React Native de LazyColumn (liste virtualisée)." },
+      { q: "Une chaîne placée directement dans un <View> provoque :",
+        choices: ["A) rien", "B) un texte invisible", "C) l'erreur « Text strings must be rendered within a <Text> »", "D) un warning TS"],
+        correct: 2,
+        exp: "En RN, tout texte doit être dans un <Text>." },
+      { q: "La liste filtrée d'un champ de recherche doit être :",
+        choices: ["A) stockée dans un second useState", "B) calculée dans un useEffect", "C) stockée dans SQLite", "D) calculée pendant le rendu à partir du texte saisi"],
+        correct: 3,
+        exp: "Pas besoin d'état dérivé ; on filtre à la volée." },
+      { q: "Avec React Compiler (SDK 57), le cours demande :",
+        choices: ["A) useMemo partout", "B) de les remplacer par useRef", "C) ni useMemo ni useCallback", "D) de désactiver le compilateur"],
+        correct: 2,
+        exp: "React Compiler mémoïse automatiquement." },
+      { q: "export default est réservé :",
+        choices: ["A) aux fichiers de src/app (routes)", "B) aux composants de src/components", "C) aux hooks", "D) aux dépôts"],
+        correct: 0,
+        exp: "export default est réservé aux routes dans Expo Router." },
+      { q: "Le dossier (tabs) :",
+        choices: ["A) ajoute /tabs à l'URL", "B) regroupe des écrans sans apparaître dans l'URL", "C) est obligatoire", "D) crée un Drawer"],
+        correct: 1,
+        exp: "Les parenthèses masquent le segment dans l'URL." },
+      { q: "Les props d'un composant sont :",
+        choices: ["A) modifiables par l'enfant", "B) globales", "C) en lecture seule, les données descendent", "D) toujours optionnelles"],
+        correct: 2,
+        exp: "Les props sont immuables côté enfant (flux unidirectionnel)." }
+    ]
+  },
+  {
+    title: "Session 02 : SQLite",
+    questions: [
+      { q: "Pour 3 000 dépenses filtrées par catégorie et totalisées par mois, le meilleur stockage est :",
+        choices: ["A) une table SQLite avec WHERE et SUM", "B) un tableau JSON dans AsyncStorage", "C) un useState racine", "D) SecureStore"],
+        correct: 0,
+        exp: "SQLite est fait pour filtrer/agréger efficacement de gros volumes." },
+      { q: "execAsync sert à :",
+        choices: ["A) une écriture paramétrée", "B) lire une ligne", "C) lire plusieurs lignes", "D) plusieurs instructions sans paramètre (schéma, PRAGMA)"],
+        correct: 3,
+        exp: "execAsync exécute du SQL brut sans paramètres." },
+      { q: "runAsync renvoie :",
+        choices: ["A) un tableau", "B) lastInsertRowId et changes", "C) T | null", "D) rien"],
+        correct: 1,
+        exp: "runAsync renvoie ces métadonnées d'écriture." },
+      { q: "getFirstAsync<T> renvoie :",
+        choices: ["A) T[]", "B) T | null", "C) Promise<void>", "D) number"],
+        correct: 1,
+        exp: "getFirstAsync renvoie la première ligne ou null." },
+      { q: "const rows = db.getAllAsync<Expense>(...) sans await : rows.length donne :",
+        choices: ["A) le nombre de lignes", "B) 0", "C) undefined sans erreur", "D) une erreur TS : rows est une Promise"],
+        correct: 3,
+        exp: "Sans await, rows est une Promise ; TS signale l'erreur." },
+      { q: "Pourquoi utiliser ? dans le SQL ?",
+        choices: ["A) éviter l'injection SQL : les valeurs sont des données", "B) c'est plus rapide", "C) obligatoire pour SELECT", "D) pour typer les colonnes"],
+        correct: 0,
+        exp: "Les ? séparent code et données (requêtes paramétrées)." },
+      { q: "PRAGMA user_version vaut pour une base neuve :",
+        choices: ["A) 1", "B) null", "C) 0", "D) -1"],
+        correct: 2,
+        exp: "Une base neuve a user_version = 0." },
+      { q: "CREATE TABLE IF NOT EXISTS :",
+        choices: ["A) met à jour le schéma", "B) supprime l'ancienne table", "C) crée une migration", "D) ne fait rien si la table existe, même si la définition a changé"],
+        correct: 3,
+        exp: "IF NOT EXISTS n'altère pas une table existante." },
+      { q: "Téléphone en version 1 (12 lignes), code en version 2. À l'ouverture :",
+        choices: ["A) table recréée vide", "B) la marche 0→1 rejoue", "C) seule la marche 1→2 s'exécute, les 12 lignes sont conservées", "D) rien"],
+        correct: 2,
+        exp: "Les migrations s'exécutent séquentiellement à partir de la version actuelle." },
+      { q: "Les marches de migration s'écrivent avec :",
+        choices: ["A) des if successifs", "B) des else if", "C) un switch unique", "D) une boucle"],
+        correct: 0,
+        exp: "Le cours utilise des if (version === N) successifs." },
+      { q: "Une marche déjà publiée :",
+        choices: ["A) se modifie librement", "B) ne se modifie plus : on en ajoute une", "C) se supprime", "D) se réécrit à chaque version"],
+        correct: 1,
+        exp: "Une migration publiée est immuable." },
+      { q: "Trois INSERT dans withTransactionAsync : les 2 premiers réussissent, le 3e lève une erreur. Résultat :",
+        choices: ["A) 2 lignes", "B) 3 lignes", "C) 0 ligne (ROLLBACK)", "D) 1 ligne"],
+        correct: 2,
+        exp: "Une transaction annule tout en cas d'erreur." },
+      { q: "SQLiteProvider avec onInit :",
+        choices: ["A) ouvre la base, exécute onInit, puis affiche les enfants", "B) affiche d'abord les enfants", "C) ne crée pas de fichier", "D) est facultatif"],
+        correct: 0,
+        exp: "onInit s'exécute avant le rendu des enfants." },
+      { q: "useSQLiteContext appelé hors SQLiteProvider :",
+        choices: ["A) base vide", "B) ça marche", "C) fallback mémoire", "D) erreur « must be used within a <SQLiteProvider> »"],
+        correct: 3,
+        exp: "Le hook exige le contexte du provider." },
+      { q: "Un écran ne doit jamais contenir :",
+        choices: ["A) de JSX", "B) de SQL", "C) de useState", "D) de style"],
+        correct: 1,
+        exp: "Le SQL doit rester dans les dépôts, pas dans les écrans." },
+      { q: "Le dépôt (expenseRepo) est l'équivalent de :",
+        choices: ["A) un ViewModel", "B) un DAO Room", "C) un NavHost", "D) un Composable"],
+        correct: 1,
+        exp: "Le dépôt est l'équivalent d'un DAO (accès aux données)." },
+      { q: "Le hook useExpenses est l'équivalent de :",
+        choices: ["A) un DAO", "B) une migration", "C) un Provider SQL", "D) un ViewModel"],
+        correct: 3,
+        exp: "Le hook gère l'état et la logique de présentation." },
+      { q: "Deux écrans qui appellent useExpenses :",
+        choices: ["A) ont chacun leur propre état", "B) partagent la même liste", "C) partagent le cache SQLite en mémoire", "D) provoquent une erreur"],
+        correct: 0,
+        exp: "Chaque appel de hook crée son propre état local." },
+      { q: "useIsFocused dans les dépendances de l'effet sert à :",
+        choices: ["A) empêcher le chargement", "B) fermer la base", "C) relire la base à chaque retour sur l'écran", "D) gérer le clavier"],
+        correct: 2,
+        exp: "useIsFocused déclenche le rechargement au focus." },
+      { q: "La fonction passée à useEffect ne peut pas être async car :",
+        choices: ["A) c'est lent", "B) TS l'interdit", "C) Metro l'interdit", "D) elle doit renvoyer rien ou la fonction de nettoyage, pas une Promise"],
+        correct: 3,
+        exp: "useEffect ne peut pas être async directement." },
+      { q: "Rôle de isCurrent dans useExpenses :",
+        choices: ["A) compter les rendus", "B) vérifier la connexion", "C) ignorer la réponse d'un ancien effet nettoyé", "D) gérer le focus"],
+        correct: 2,
+        exp: "Le flag isCurrent évite les mises à jour obsolètes." },
+      { q: "Number('12,5') vaut :",
+        choices: ["A) NaN", "B) 12.5", "C) 12", "D) 0"],
+        correct: 0,
+        exp: "Number('12,5') échoue à cause de la virgule." },
+      { q: "parseFloat('12,5') vaut :",
+        choices: ["A) 12.5", "B) 12", "C) NaN", "D) erreur"],
+        correct: 1,
+        exp: "parseFloat('12,5') s'arrête à la virgule et renvoie 12." },
+      { q: "Dans un formulaire, l'état du montant doit être :",
+        choices: ["A) un number", "B) un boolean", "C) un string, converti à la validation", "D) un Date"],
+        correct: 2,
+        exp: "On garde le texte brut puis on convertit à la validation." },
+      { q: "keyboardType=\"decimal-pad\" :",
+        choices: ["A) choisit seulement le clavier, sans valider", "B) valide la saisie", "C) convertit en nombre", "D) bloque la virgule"],
+        correct: 0,
+        exp: "keyboardType ne fait qu'afficher un clavier adapté." },
+      { q: "SELECT SUM(amount) sans aucune ligne correspondante renvoie :",
+        choices: ["A) 0", "B) une erreur", "C) un tableau vide", "D) NULL (d'où ?? 0)"],
+        correct: 3,
+        exp: "SUM sur zéro ligne renvoie NULL." },
+      { q: "Promise.all([repo.all(), repo.total()]) :",
+        choices: ["A) exécute en série", "B) lance les deux requêtes ensemble et attend les deux", "C) annule la 2e", "D) ne garde que la 1re"],
+        correct: 1,
+        exp: "Promise.all exécute en parallèle." },
+      { q: "Si on désinstalle Expo Go :",
+        choices: ["A) la base reste", "B) la base du projet est supprimée", "C) elle est envoyée au serveur", "D) elle est exportée"],
+        correct: 1,
+        exp: "Désinstaller Expo Go supprime les données locales du projet." },
+      { q: "Ajouter une colonne note en version 2 :",
+        choices: ["A) modifier le CREATE TABLE de la marche 0", "B) supprimer la base", "C) changer IF NOT EXISTS", "D) ajouter une marche if (version === 1) avec ALTER TABLE ADD COLUMN (colonne NULL)"],
+        correct: 3,
+        exp: "On ajoute une migration, jamais on ne modifie l'ancienne." },
+      { q: "Oublier le await devant db.runAsync dans la boucle d'une transaction :",
+        choices: ["A) COMMIT trop tôt, une erreur tardive n'annule plus rien", "B) rien", "C) erreur TS systématique", "D) ROLLBACK automatique"],
+        correct: 0,
+        exp: "Sans await, la transaction peut se terminer avant les écritures." }
+    ]
+  },
+  {
+    title: "Session 03 : REST et TanStack Query",
+    questions: [
+      { q: "fetch reçoit un 404. Que se passe-t-il ?",
+        choices: ["A) la Promise est rejetée", "B) res vaut null", "C) pas d'exception, res.ok vaut false", "D) catch s'exécute"],
+        correct: 2,
+        exp: "fetch ne rejette pas sur 404 ; il faut vérifier res.ok." },
+      { q: "fetch rejette sa Promise :",
+        choices: ["A) sur tout code 4xx", "B) sur tout code 5xx", "C) jamais", "D) uniquement sur échec réseau"],
+        correct: 3,
+        exp: "fetch ne rejette que sur erreur réseau." },
+      { q: "ApiError conserve :",
+        choices: ["A) le jeton", "B) le corps complet", "C) le code HTTP dans status", "D) l'URL"],
+        correct: 2,
+        exp: "ApiError conserve le statut HTTP." },
+      { q: "return (await res.json()) as T :",
+        choices: ["A) est une promesse faite au compilateur, non vérifiée", "B) vérifie le type à l'exécution", "C) valide le JSON", "D) convertit en classe"],
+        correct: 0,
+        exp: "as T est une assertion, pas une vérification runtime." },
+      { q: "Un code 401 signifie :",
+        choices: ["A) introuvable", "B) non authentifié", "C) erreur serveur", "D) succès"],
+        correct: 1,
+        exp: "401 = Unauthorized." },
+      { q: "Un code 5xx indique :",
+        choices: ["A) erreur du client", "B) redirection", "C) erreur du serveur", "D) succès"],
+        correct: 2,
+        exp: "5xx = erreur côté serveur." },
+      { q: "useEffect + fetch sans nettoyage : « ph » (900 ms) puis « phone » (200 ms). La liste affiche :",
+        choices: ["A) « ph » (la dernière réponse arrivée gagne)", "B) « phone »", "C) vide", "D) erreur"],
+        correct: 0,
+        exp: "Sans annulation, la réponse la plus lente écrase." },
+      { q: "TanStack Query évite la race condition car :",
+        choices: ["A) il annule le réseau", "B) il trie les réponses", "C) il attend", "D) chaque résultat est rangé sous sa clé de requête"],
+        correct: 3,
+        exp: "Les clés séparent les résultats, évitant les races." },
+      { q: "Le QueryClient doit être créé :",
+        choices: ["A) dans chaque composant", "B) une seule fois, hors composant", "C) dans un useEffect", "D) dans le layout à chaque rendu"],
+        correct: 1,
+        exp: "Le QueryClient doit être stable et unique." },
+      { q: "Erreur « No QueryClient set » :",
+        choices: ["A) réseau coupé", "B) QueryClientProvider manque ou est au-dessus du hook", "C) clé invalide", "D) staleTime à 0"],
+        correct: 1,
+        exp: "Erreur classique d'absence de provider." },
+      { q: "staleTime par défaut :",
+        choices: ["A) 30 s", "B) 5 min", "C) Infinity", "D) 0"],
+        correct: 3,
+        exp: "Par défaut staleTime = 0." },
+      { q: "gcTime par défaut :",
+        choices: ["A) 5 minutes", "B) 0", "C) 30 s", "D) Infinity"],
+        correct: 0,
+        exp: "gcTime par défaut = 5 min." },
+      { q: "staleTime décide :",
+        choices: ["A) quand supprimer du cache", "B) la taille du cache", "C) quand redemander", "D) le nombre d'essais"],
+        correct: 2,
+        exp: "staleTime définit la fraîcheur avant refetch." },
+      { q: "gcTime décide :",
+        choices: ["A) quand redemander", "B) le débit", "C) la pagination", "D) quand oublier une entrée inactive"],
+        correct: 3,
+        exp: "gcTime = durée de vie dans le cache." },
+      { q: "staleTime: Infinity :",
+        choices: ["A) garde l'entrée plus longtemps en mémoire", "B) désactive le cache", "C) empêche seulement de la redemander", "D) force le refetch"],
+        correct: 2,
+        exp: "Infinity = jamais périmé, mais peut être gc." },
+      { q: "Données périmées (stale) au remontage de l'écran :",
+        choices: ["A) affichées depuis le cache puis rafraîchies en arrière-plan", "B) écran de chargement", "C) supprimées", "D) erreur"],
+        correct: 0,
+        exp: "Comportement stale-while-revalidate." },
+      { q: "['products', {category:'beauty', search:''}] et ['products', {search:'', category:'beauty'}] :",
+        choices: ["A) deux entrées", "B) la même entrée", "C) une erreur", "D) dépend de l'ordre"],
+        correct: 1,
+        exp: "L'ordre des propriétés d'un objet n'importe pas pour la clé." },
+      { q: "invalidateQueries({queryKey:['products']}) marque périmées :",
+        choices: ["A) seulement ['products'] exacte", "B) toutes les clés", "C) toutes les clés commençant par 'products'", "D) aucune"],
+        correct: 2,
+        exp: "invalidateQueries est préfixe par défaut." },
+      { q: "Toute variable utilisée par queryFn doit figurer :",
+        choices: ["A) dans la clé de requête", "B) dans le staleTime", "C) dans le Context", "D) dans .env"],
+        correct: 0,
+        exp: "Toute variable utilisée par queryFn doit être dans la clé." },
+      { q: "isPending signifie :",
+        choices: ["A) requête en cours en arrière-plan", "B) erreur", "C) donnée périmée", "D) aucune donnée en cache encore (premier chargement)"],
+        correct: 3,
+        exp: "isPending = pas encore de données." },
+      { q: "isRefetching est vrai quand :",
+        choices: ["A) premier chargement", "B) une requête est en cours alors que des données sont déjà là", "C) erreur", "D) la mutation réussit"],
+        correct: 1,
+        exp: "isRefetching = refetch avec données existantes." },
+      { q: "getNextPageParam renvoie undefined quand :",
+        choices: ["A) la page est vide", "B) il n'y a plus de page suivante", "C) erreur réseau", "D) au premier appel"],
+        correct: 1,
+        exp: "undefined = fin de pagination." },
+      { q: "useInfiniteQuery stocke les pages :",
+        choices: ["A) dans des entrées de cache séparées", "B) en SQLite", "C) dans le Context", "D) dans une seule entrée de cache contenant plusieurs pages"],
+        correct: 3,
+        exp: "useInfiniteQuery stocke pages dans une entrée." },
+      { q: "useMutation :",
+        choices: ["A) ne part que si l'écran appelle mutate()", "B) part automatiquement au montage", "C) est réservé à GET", "D) remplace useQuery"],
+        correct: 0,
+        exp: "Les mutations sont déclenchées manuellement." },
+      { q: "Après une écriture réussie, on :",
+        choices: ["A) redémarre l'app", "B) vide le Context", "C) invalide les clés concernées", "D) refait initializeApp"],
+        correct: 2,
+        exp: "On invalide pour rafraîchir après écriture." },
+      { q: "Le jeton de connexion se stocke dans :",
+        choices: ["A) AsyncStorage", "B) SQLite", "C) une variable globale", "D) expo-secure-store (chiffré)"],
+        correct: 3,
+        exp: "Le jeton doit être stocké chiffré." },
+      { q: "SecureStore utilise :",
+        choices: ["A) un fichier JSON clair", "B) le cloud", "C) Keystore (Android) / Keychain (iOS)", "D) le cache réseau"],
+        correct: 2,
+        exp: "SecureStore utilise les stockages sécurisés natifs." },
+      { q: "Le Context d'authentification doit contenir :",
+        choices: ["A) un petit état qui change rarement (le jeton)", "B) tout l'état serveur", "C) la liste des produits", "D) le QueryClient"],
+        correct: 0,
+        exp: "Le Context doit rester léger." },
+      { q: "Pourquoi isRestoring ?",
+        choices: ["A) pour chiffrer", "B) lecture asynchrone de SecureStore au lancement : on ne sait pas encore si une session existe", "C) pour la déconnexion", "D) pour le cache"],
+        correct: 1,
+        exp: "isRestoring évite un écran de login prématuré." },
+      { q: "Avec seulement useState pour le token, après fermeture complète de l'app :",
+        choices: ["A) toujours connecté", "B) le cache TanStack le garde", "C) reconnexion nécessaire : l'état vit en mémoire", "D) React le garde"],
+        correct: 2,
+        exp: "useState ne persiste pas." },
+      { q: "enabled: token !== null dans useMe :",
+        choices: ["A) active la requête uniquement si un jeton existe", "B) désactive le retry", "C) force le refetch", "D) supprime le cache"],
+        correct: 0,
+        exp: "enabled conditionne l'exécution." },
+      { q: "À la déconnexion, removeQueries(['me']) sert à :",
+        choices: ["A) libérer la RAM", "B) éviter que l'utilisateur suivant voie le profil du précédent", "C) réinitialiser SQLite", "D) invalider le jeton serveur"],
+        correct: 1,
+        exp: "On supprime les données sensibles au logout." },
+      { q: "Pourquoi ne pas mettre le jeton dans la clé de requête ?",
+        choices: ["A) trop long", "B) une clé n'est pas un endroit pour un secret", "C) interdit par TS", "D) pour le debounce"],
+        correct: 1,
+        exp: "Les clés sont visibles/loggées ; pas de secret." },
+      { q: "Debounce : passer searchText (brut) au lieu de search (retardé) à useProducts :",
+        choices: ["A) erreur TS", "B) ça compile mais une requête par lettre, écran qui clignote", "C) rien ne change", "D) la recherche s'arrête"],
+        correct: 1,
+        exp: "Sans debounce, trop de requêtes." },
+      { q: "DummyJSON POST /carts/add :",
+        choices: ["A) enregistre le panier", "B) renvoie 404", "C) exige SQLite", "D) simule le succès, rien n'est enregistré"],
+        correct: 3,
+        exp: "DummyJSON est une API factice." },
+      { q: "Ordre d'une mise à jour optimiste :",
+        choices: ["A) cancelQueries + onMutate (setQueryData), onError (restaure), onSettled (invalide)", "B) onSettled, onError, onMutate", "C) seulement onSuccess", "D) invalidate puis setQueryData"],
+        correct: 0,
+        exp: "C'est l'ordre correct d'une mutation optimiste." }
+    ]
+  },
+  {
+    title: "Session 04 : Firebase",
+    questions: [
+      { q: "Dans Expo Go, quel SDK Firebase ?",
+        choices: ["A) @react-native-firebase/app", "B) les deux", "C) firebase (SDK JS)", "D) aucun"],
+        correct: 2,
+        exp: "Expo Go supporte le SDK JS Firebase." },
+      { q: "@react-native-firebase/* dans Expo Go :",
+        choices: ["A) fonctionne", "B) fonctionne sur Android seulement", "C) se compile au scan", "D) erreur : module natif absent (development build requis)"],
+        correct: 3,
+        exp: "@react-native-firebase exige un build natif." },
+      { q: "L'apiKey Firebase est :",
+        choices: ["A) un secret à cacher absolument", "B) un mot de passe admin", "C) une valeur de configuration publique, pas un secret", "D) un jeton de session"],
+        correct: 2,
+        exp: "apiKey Firebase n'est pas un secret." },
+      { q: "Les variables EXPO_PUBLIC_* :",
+        choices: ["A) sont copiées en clair dans le bundle", "B) restent sur le PC", "C) sont chiffrées", "D) sont lues au runtime depuis le serveur"],
+        correct: 0,
+        exp: "EXPO_PUBLIC_* sont intégrées en clair." },
+      { q: "Après modification de .env :",
+        choices: ["A) Fast Refresh suffit", "B) arrêter et relancer npx expo start", "C) rien", "D) réinstaller Expo Go"],
+        correct: 1,
+        exp: "Les variables d'env sont lues au démarrage." },
+      { q: "Dans Git :",
+        choices: ["A) commiter .env", "B) commiter les deux", "C) ignorer .env, commiter .env.example sans valeurs", "D) ne rien commiter"],
+        correct: 2,
+        exp: "Bonne pratique Git." },
+      { q: "getApps().length ? getApp() : initializeApp(...) sert à :",
+        choices: ["A) éviter une seconde app quand Fast Refresh réexécute le module", "B) accélérer", "C) gérer l'auth", "D) chiffrer"],
+        correct: 0,
+        exp: "Évite duplicate-app." },
+      { q: "initializeAuth + getReactNativePersistence(AsyncStorage) :",
+        choices: ["A) crypte le mot de passe", "B) active Firestore", "C) est inutile", "D) garde la session après redémarrage"],
+        correct: 3,
+        exp: "Persistance de l'auth via AsyncStorage." },
+      { q: "signIn met à jour l'état utilisateur :",
+        choices: ["A) directement avec setUser", "B) indirectement : Firebase prévient onAuthStateChanged, qui met à jour le Context", "C) jamais", "D) via SQLite"],
+        correct: 1,
+        exp: "L'état suit le listener Firebase." },
+      { q: "Pourquoi un état initializing ?",
+        choices: ["A) pour l'animation", "B) au lancement user vaut null avant la restauration de session", "C) pour le logout", "D) pour Firestore"],
+        correct: 1,
+        exp: "Évite de croire à une déconnexion." },
+      { q: "Stack.Protected guard={user !== null} :",
+        choices: ["A) masque le header", "B) crypte la route", "C) change l'URL", "D) rend la route accessible seulement si la garde est vraie, la navigation suit sans router.replace"],
+        correct: 3,
+        exp: "Stack.Protected gère la navigation automatiquement." },
+      { q: "Firestore, comparé à SQL :",
+        choices: ["A) pas de jointures, requêtes simples sur une collection", "B) a des jointures", "C) schéma strict", "D) tables obligatoires"],
+        correct: 0,
+        exp: "Firestore est NoSQL sans jointures." },
+      { q: "getDocs :",
+        choices: ["A) écoute en continu", "B) écrit", "C) lit une fois, comme un GET", "D) supprime"],
+        correct: 2,
+        exp: "getDocs = lecture unique." },
+      { q: "onSnapshot :",
+        choices: ["A) lit une fois", "B) est asynchrone avec await", "C) est un hook", "D) rappelle à chaque changement et renvoie une fonction de désabonnement"],
+        correct: 3,
+        exp: "onSnapshot = écoute temps réel." },
+      { q: "Un useEffect appelle listen sans renvoyer unsubscribe. À chaque Fast Refresh :",
+        choices: ["A) l'ancien écouteur est remplacé", "B) rien", "C) un écouteur de plus s'ouvre, consommant le quota de lectures", "D) erreur"],
+        correct: 2,
+        exp: "Fuite d'écouteurs sans unsubscribe." },
+      { q: "Hors ligne, addDoc :",
+        choices: ["A) la tâche apparaît tout de suite avec hasPendingWrites: true", "B) échoue immédiatement", "C) rien ne s'affiche", "D) elle est perdue"],
+        correct: 0,
+        exp: "Écriture optimiste locale." },
+      { q: "La Promise de addDoc se résout :",
+        choices: ["A) immédiatement", "B) à la confirmation du serveur", "C) jamais", "D) dès l'écriture dans le cache local"],
+        correct: 1,
+        exp: "La Promise attend le serveur." },
+      { q: "Écriture refusée par les règles :",
+        choices: ["A) la tâche reste", "B) elle est mise en attente", "C) elle disparaît du cache et la Promise est rejetée (permission-denied)", "D) l'app plante"],
+        correct: 2,
+        exp: "Refus = rejet + retrait du cache." },
+      { q: "serverTimestamp() :",
+        choices: ["A) laisse le serveur fixer l'heure, ordre cohérent entre appareils", "B) utilise l'heure du téléphone", "C) est un Date.now()", "D) est facultatif"],
+        correct: 0,
+        exp: "serverTimestamp() = heure serveur." },
+      { q: "metadata.hasPendingWrites vrai signifie :",
+        choices: ["A) le serveur a refusé", "B) hors ligne définitivement", "C) document supprimé", "D) l'écriture locale n'est pas encore confirmée par le serveur"],
+        correct: 3,
+        exp: "hasPendingWrites = en attente de confirmation." },
+      { q: "Dans les règles, pour un create, on vérifie :",
+        choices: ["A) resource.data", "B) request.resource.data (le document envoyé)", "C) request.auth seulement", "D) rien"],
+        correct: 1,
+        exp: "Pour un create, on valide les données entrantes." },
+      { q: "Pour update/delete, on vérifie le propriétaire avec :",
+        choices: ["A) request.resource.data.ownerId", "B) resource.data.ownerId (valeur stockée)", "C) request.auth.token", "D) ownerEmail"],
+        correct: 1,
+        exp: "Pour update/delete, on vérifie la valeur existante." },
+      { q: "Si aucune règle allow ne s'applique :",
+        choices: ["A) autorisé", "B) dépend", "C) erreur de syntaxe", "D) refusé"],
+        correct: 3,
+        exp: "Pas de règle allow = refus par défaut." },
+      { q: "Avec les règles du cours, Bob coche la tâche d'Alice :",
+        choices: ["A) refusé", "B) accepté", "C) accepté si connecté", "D) dépend de createdAt"],
+        correct: 0,
+        exp: "Les règles du cours interdisent de modifier la tâche d'autrui." },
+      { q: "Avec les règles du cours, Bob lit la tâche d'Alice :",
+        choices: ["A) refusé", "B) refusé si non propriétaire", "C) accepté (toute personne connectée lit)", "D) dépend de la tâche"],
+        correct: 2,
+        exp: "Les règles du cours autorisent la lecture à tout utilisateur connecté." },
+      { q: "Une personne non connectée possède l'apiKey et le projectId et appelle deleteDoc :",
+        choices: ["A) réussit", "B) réussit si .env commité", "C) dépend de l'apiKey", "D) refusé : request.auth vaut null"],
+        correct: 3,
+        exp: "Non connecté = pas d'auth = refus." },
+      { q: "Une modification faite dans la console Firebase :",
+        choices: ["A) est soumise aux règles", "B) est refusée si non propriétaire", "C) n'est pas soumise aux règles", "D) exige un jeton"],
+        correct: 2,
+        exp: "La console Firebase contourne les règles." },
+      { q: "diff(resource.data).affectedKeys().hasOnly(['done']) signifie :",
+        choices: ["A) seul done peut être modifié", "B) done est supprimé", "C) tous les champs sauf done", "D) done est obligatoire"],
+        correct: 0,
+        exp: "hasOnly(['done']) = seuls ces champs changent." },
+      { q: "title.size() <= 80 dans les règles :",
+        choices: ["A) validation côté client", "B) validation côté serveur, valable pour tous les clients", "C) simple conseil", "D) inutile avec un formulaire"],
+        correct: 1,
+        exp: "Les règles valident côté serveur." },
+      { q: "Masquer le bouton « Supprimer » sur les tâches des autres :",
+        choices: ["A) suffit à protéger", "B) remplace les règles", "C) ne protège rien : seules les règles décident", "D) est interdit"],
+        correct: 2,
+        exp: "Masquer l'UI ne protège pas les données." },
+      { q: "orderBy('createdAt','desc') : un document sans champ createdAt :",
+        choices: ["A) n'apparaît pas", "B) apparaît en dernier", "C) apparaît en premier", "D) provoque une erreur"],
+        correct: 0,
+        exp: "Sans le champ trié, le document est exclu de la requête orderBy." }
+    ]
+  }
+];
+
+/* ============================================================
+   RENDU
+   ============================================================ */
+let questionCounter = 0;
+const allQuestions = [];
+
+function render() {
+  const container = document.getElementById('questions-container');
+  let html = '';
+
+  SESSIONS.forEach(session => {
+    html += `<div class="session-title">${session.title}</div>`;
+
+    session.questions.forEach(q => {
+      const id = questionCounter++;
+      allQuestions.push(q);
+
+      html += `<div class="question" id="q-${id}" data-id="${id}">`;
+      html += `<div class="q-num">Question ${id + 1}</div>`;
+      html += `<div class="q-text">${q.q}</div>`;
+      html += `<div class="choices">`;
+
+      q.choices.forEach((choice, idx) => {
+        html += `<label class="choice" data-idx="${idx}" id="c-${id}-${idx}">
+          <input type="radio" name="q${id}" value="${idx}" onchange="onSelect(${id}, ${idx})">
+          <span class="label-letter">${choice.substring(0, 2)}</span>
+          <span>${choice.substring(3)}</span>
+        </label>`;
+      });
+
+      html += `</div>`;
+      html += `<div class="badge-result" id="badge-${id}"></div>`;
+      html += `<div class="explanation" id="exp-${id}"><strong>✅ Bonne réponse : ${q.choices[q.correct]}</strong><br>${q.exp}</div>`;
+      html += `</div>`;
+    });
+  });
+
+  container.innerHTML = html;
+  updateScore(0, 0);
+}
+
+/* ============================================================
+   SÉLECTION
+   ============================================================ */
+const userAnswers = {}; // id -> idx choisi
+
+function onSelect(qId, idx) {
+  userAnswers[qId] = idx;
+
+  // Mettre à jour le style visuel
+  const choices = document.querySelectorAll(`#q-${qId} .choice`);
+  choices.forEach((el, i) => {
+    el.classList.toggle('selected', i === idx);
+  });
+
+  updateLiveScore();
+}
+
+/* ============================================================
+   AFFICHAGE DES CORRECTIONS
+   ============================================================ */
+let correctionsShown = false;
+
+function showCorrections() {
+  if (correctionsShown) return;
+  correctionsShown = true;
+
+  let correctCount = 0;
+  let answeredCount = 0;
+
+  allQuestions.forEach((q, id) => {
+    const userIdx = userAnswers[id];
+    const isAnswered = userIdx !== undefined;
+
+    const questionEl = document.getElementById(`q-${id}`);
+    const choices = document.querySelectorAll(`#q-${id} .choice`);
+    const badge = document.getElementById(`badge-${id}`);
+    const exp = document.getElementById(`exp-${id}`);
+
+    choices.forEach((el, i) => {
+      el.classList.add('disabled');
+      el.classList.remove('selected');
+
+      if (i === q.correct) {
+        el.classList.add('correct-answer');
+      } else if (isAnswered && i === userIdx) {
+        el.classList.add('wrong-answer');
+      }
+
+      // Désactiver les inputs
+      const input = el.querySelector('input');
+      if (input) input.disabled = true;
+    });
+
+    questionEl.classList.remove('unanswered', 'correct', 'wrong');
+
+    if (!isAnswered) {
+      questionEl.classList.add('unanswered');
+      badge.textContent = '⚠️ Non répondu';
+      badge.className = 'badge-result show na';
+    } else if (userIdx === q.correct) {
+      questionEl.classList.add('correct');
+      badge.textContent = '✅ Correct';
+      badge.className = 'badge-result show ok';
+      correctCount++;
+    } else {
+      questionEl.classList.add('wrong');
+      badge.textContent = '❌ Incorrect';
+      badge.className = 'badge-result show ko';
+    }
+
+    if (isAnswered) answeredCount++;
+    exp.classList.add('show');
+  });
+
+  const total = allQuestions.length;
+  const scoreEl = document.getElementById('score');
+  scoreEl.textContent = `${correctCount} / ${total} (${answeredCount} répondues)`;
+
+  // Changer le bouton
+  const btn = document.getElementById('btn-show');
+  btn.textContent = '🔒 Corrections affichées';
+  btn.disabled = true;
+  btn.style.opacity = '0.6';
+  btn.style.cursor = 'default';
+
+  // Scroll to top
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ============================================================
+   SCORE LIVE (avant correction)
+   ============================================================ */
+function updateLiveScore() {
+  if (correctionsShown) return;
+  const answered = Object.keys(userAnswers).length;
+  document.getElementById('score').textContent = `${answered} / ${allQuestions.length} répondues`;
+}
+
+function updateScore() {
+  updateLiveScore();
+}
+
+/* ============================================================
+   RÉINITIALISATION
+   ============================================================ */
+function reset() {
+  if (!confirm('Réinitialiser toutes vos réponses ?')) return;
+
+  // Vider les réponses
+  Object.keys(userAnswers).forEach(k => delete userAnswers[k]);
+  correctionsShown = false;
+
+  // Re-render
+  questionCounter = 0;
+  allQuestions.length = 0;
+  render();
+
+  // Réactiver le bouton
+  const btn = document.getElementById('btn-show');
+  btn.textContent = '✅ Afficher les corrections';
+  btn.disabled = false;
+  btn.style.opacity = '1';
+  btn.style.cursor = 'pointer';
+
+  document.getElementById('score').textContent = `— / 125`;
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', () => {
+  render();
+  document.getElementById('btn-show').addEventListener('click', showCorrections);
+  document.getElementById('btn-reset').addEventListener('click', reset);
+});
+</script>
+</body>
+</html>
