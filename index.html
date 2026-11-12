@@ -3,894 +3,415 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>QCM Master — 125 Questions</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<title>QCM - 125 Questions</title>
 <style>
-/* ============================================================
-   RESET & VARIABLES
-   ============================================================ */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --bg-0: #0a0e1a;
-  --bg-1: #111827;
-  --bg-2: #1a2235;
-  --bg-3: #232d45;
-  --surface: rgba(26, 34, 53, 0.7);
-  --surface-solid: #1a2235;
-  --border: rgba(148, 163, 184, 0.12);
-  --border-strong: rgba(148, 163, 184, 0.25);
-  --text: #e2e8f0;
-  --text-dim: #94a3b8;
-  --text-faint: #64748b;
-  --primary: #6366f1;
-  --primary-light: #818cf8;
-  --primary-dark: #4f46e5;
-  --success: #10b981;
-  --success-bg: rgba(16, 185, 129, 0.12);
-  --danger: #ef4444;
-  --danger-bg: rgba(239, 68, 68, 0.12);
-  --warning: #f59e0b;
-  --warning-bg: rgba(245, 158, 11, 0.12);
-  --gradient-1: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
-  --gradient-2: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
-  --gradient-3: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
-  --gradient-4: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35);
-  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.4);
-  --shadow-glow: 0 0 24px rgba(99, 102, 241, 0.25);
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
-  --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-[data-theme="light"] {
-  --bg-0: #f1f5f9;
-  --bg-1: #ffffff;
-  --bg-2: #f8fafc;
-  --bg-3: #e2e8f0;
-  --surface: rgba(255, 255, 255, 0.8);
-  --surface-solid: #ffffff;
-  --border: rgba(15, 23, 42, 0.08);
-  --border-strong: rgba(15, 23, 42, 0.15);
-  --text: #0f172a;
-  --text-dim: #475569;
-  --text-faint: #94a3b8;
-  --success-bg: rgba(16, 185, 129, 0.1);
-  --danger-bg: rgba(239, 68, 68, 0.1);
-  --warning-bg: rgba(245, 158, 11, 0.1);
-  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
-  --shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.12);
-}
-
-html { scroll-behavior: smooth; }
-
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: var(--bg-0);
-  color: var(--text);
-  line-height: 1.6;
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
-  transition: background 0.3s, color 0.3s;
-  overflow-x: hidden;
-}
-
-/* Background decoration */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background:
-    radial-gradient(circle at 15% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 45%),
-    radial-gradient(circle at 85% 80%, rgba(139, 92, 246, 0.12) 0%, transparent 45%),
-    radial-gradient(circle at 50% 50%, rgba(236, 72, 153, 0.06) 0%, transparent 60%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* ============================================================
-   LAYOUT
-   ============================================================ */
-.app {
-  display: grid;
-  grid-template-columns: 280px 1fr;
-  min-height: 100vh;
-  position: relative;
-  z-index: 1;
-}
-
-/* ============================================================
-   SIDEBAR
-   ============================================================ */
-.sidebar {
-  background: var(--surface);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-right: 1px solid var(--border);
-  padding: 24px 0;
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  transition: background 0.3s, border-color 0.3s;
-}
-
-.sidebar::-webkit-scrollbar { width: 6px; }
-.sidebar::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
-
-.brand {
-  padding: 0 24px 24px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 20px;
-}
-
-.brand-logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 4px;
-}
-
-.brand-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: var(--gradient-1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  box-shadow: var(--shadow-glow);
-}
-
-.brand-title {
-  font-size: 1.1rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-}
-
-.brand-sub {
-  font-size: 0.75rem;
-  color: var(--text-faint);
-  font-family: 'JetBrains Mono', monospace;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.nav-section-title {
-  padding: 0 24px;
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--text-faint);
-  margin-bottom: 12px;
-}
-
-.nav-list {
-  list-style: none;
-  padding: 0 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: var(--transition);
-  color: var(--text-dim);
-  font-weight: 500;
-  font-size: 0.9rem;
-  position: relative;
-  border: 1px solid transparent;
-}
-
-.nav-item:hover {
-  background: var(--bg-2);
-  color: var(--text);
-}
-
-.nav-item.active {
-  background: var(--gradient-1);
-  color: white;
-  box-shadow: var(--shadow-glow);
-}
-
-.nav-item.active .nav-count {
-  background: rgba(255, 255, 255, 0.25);
-  color: white;
-}
-
-.nav-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background: var(--bg-3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  font-weight: 800;
-  font-family: 'JetBrains Mono', monospace;
-  flex-shrink: 0;
-}
-
-.nav-item.active .nav-icon {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.nav-label {
-  flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.nav-count {
-  font-size: 0.7rem;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 10px;
-  background: var(--bg-3);
-  color: var(--text-faint);
-  font-family: 'JetBrains Mono', monospace;
-}
-
-.sidebar-footer {
-  margin-top: auto;
-  padding: 20px 24px 0;
-  border-top: 1px solid var(--border);
-}
-
-.progress-label {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.75rem;
-  color: var(--text-faint);
-  margin-bottom: 8px;
-  font-weight: 600;
-}
-
-.progress-bar {
-  height: 8px;
-  background: var(--bg-3);
-  border-radius: 4px;
-  overflow: hidden;
-  margin-bottom: 20px;
-}
-
-.progress-fill {
-  height: 100%;
-  background: var(--gradient-1);
-  border-radius: 4px;
-  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  width: 0%;
-}
-
-.theme-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  padding: 10px;
-  border-radius: var(--radius-md);
-  background: var(--bg-2);
-  border: 1px solid var(--border);
-  color: var(--text-dim);
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 0.85rem;
-  transition: var(--transition);
-  font-family: inherit;
-}
-
-.theme-toggle:hover {
-  background: var(--bg-3);
-  color: var(--text);
-}
-
-/* ============================================================
-   MAIN
-   ============================================================ */
-.main {
-  padding: 32px 40px 80px;
-  max-width: 100%;
-  overflow-x: hidden;
-}
-
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 28px;
-  flex-wrap: wrap;
-}
-
-.page-title {
-  font-size: 1.75rem;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  line-height: 1.2;
-}
-
-.page-subtitle {
-  color: var(--text-dim);
-  font-size: 0.9rem;
-  margin-top: 4px;
-}
-
-.topbar-actions {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 18px;
-  border-radius: var(--radius-md);
-  border: 1px solid transparent;
-  font-family: inherit;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: var(--transition);
-  white-space: nowrap;
-}
-
-.btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-.btn-primary {
-  background: var(--gradient-1);
-  color: white;
-  box-shadow: var(--shadow-glow);
-}
-.btn-primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 0 32px rgba(99, 102, 241, 0.4); }
-
-.btn-ghost {
-  background: var(--surface);
-  color: var(--text-dim);
-  border-color: var(--border-strong);
-  backdrop-filter: blur(10px);
-}
-.btn-ghost:hover:not(:disabled) { background: var(--bg-3); color: var(--text); }
-
-/* ============================================================
-   STATS CARDS
-   ============================================================ */
-.stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 14px;
-  margin-bottom: 28px;
-}
-
-.stat-card {
-  background: var(--surface);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 16px 18px;
-  position: relative;
-  overflow: hidden;
-  transition: var(--transition);
-}
-
-.stat-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: var(--gradient-1);
-}
-
-.stat-card.green::before { background: var(--gradient-3); }
-.stat-card.orange::before { background: var(--gradient-4); }
-.stat-card.blue::before { background: var(--gradient-2); }
-
-.stat-label {
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-weight: 700;
-  color: var(--text-faint);
-  margin-bottom: 6px;
-}
-
-.stat-value {
-  font-size: 1.5rem;
-  font-weight: 800;
-  font-family: 'JetBrains Mono', monospace;
-  letter-spacing: -0.03em;
-  line-height: 1.1;
-}
-
-.stat-value small {
-  font-size: 0.85rem;
-  color: var(--text-faint);
-  font-weight: 600;
-}
-
-/* ============================================================
-   SESSION VIEW
-   ============================================================ */
-.session-view {
-  display: none;
-  animation: fadeIn 0.3s ease;
-}
-
-.session-view.active { display: block; }
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.session-header {
-  background: var(--surface);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  padding: 24px 28px;
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-.session-header-left {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.session-badge {
-  width: 56px;
-  height: 56px;
-  border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.4rem;
-  font-weight: 800;
-  font-family: 'JetBrains Mono', monospace;
-  color: white;
-  flex-shrink: 0;
-  box-shadow: var(--shadow-md);
-}
-
-.session-header h2 {
-  font-size: 1.3rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-}
-
-.session-header p {
-  font-size: 0.85rem;
-  color: var(--text-dim);
-}
-
-.session-progress {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 0.85rem;
-  color: var(--text-dim);
-  font-weight: 600;
-}
-
-.session-progress .mini-bar {
-  width: 120px;
-  height: 6px;
-  background: var(--bg-3);
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.session-progress .mini-fill {
-  height: 100%;
-  background: var(--gradient-3);
-  width: 0%;
-  transition: width 0.4s;
-}
-
-/* ============================================================
-   QUESTION CARD
-   ============================================================ */
-.question-card {
-  background: var(--surface);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 22px 24px;
-  margin-bottom: 16px;
-  transition: var(--transition);
-  position: relative;
-  overflow: hidden;
-}
-
-.question-card::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 4px;
-  background: var(--border-strong);
-  transition: var(--transition);
-}
-
-.question-card.correct::before { background: var(--success); }
-.question-card.wrong::before { background: var(--danger); }
-.question-card.unanswered::before { background: var(--warning); }
-
-.question-card.correct { background: linear-gradient(90deg, var(--success-bg), var(--surface) 60%); }
-.question-card.wrong { background: linear-gradient(90deg, var(--danger-bg), var(--surface) 60%); }
-
-.q-head {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  margin-bottom: 16px;
-}
-
-.q-index {
-  flex-shrink: 0;
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: var(--bg-3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 0.85rem;
-  font-family: 'JetBrains Mono', monospace;
-  color: var(--text-dim);
-}
-
-.question-card.correct .q-index { background: var(--success); color: white; }
-.question-card.wrong .q-index { background: var(--danger); color: white; }
-
-.q-text {
-  font-weight: 600;
-  font-size: 1rem;
-  line-height: 1.5;
-  flex: 1;
-  padding-top: 6px;
-}
-
-.choices {
-  display: grid;
-  gap: 8px;
-  margin-left: 50px;
-}
-
-.choice {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 12px 16px;
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: var(--transition);
-  background: var(--bg-1);
-  user-select: none;
-  position: relative;
-}
-
-.choice:hover:not(.disabled) {
-  border-color: var(--primary);
-  background: var(--bg-2);
-  transform: translateX(2px);
-}
-
-.choice input { display: none; }
-
-.choice-radio {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 2px solid var(--border-strong);
-  flex-shrink: 0;
-  margin-top: 1px;
-  position: relative;
-  transition: var(--transition);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.choice-radio::after {
-  content: '';
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: transparent;
-  transition: var(--transition);
-}
-
-.choice.selected {
-  border-color: var(--primary);
-  background: rgba(99, 102, 241, 0.08);
-}
-
-.choice.selected .choice-radio {
-  border-color: var(--primary);
-}
-
-.choice.selected .choice-radio::after {
-  background: var(--primary);
-}
-
-.choice-letter {
-  font-weight: 800;
-  font-family: 'JetBrains Mono', monospace;
-  color: var(--text-faint);
-  font-size: 0.85rem;
-  flex-shrink: 0;
-  min-width: 18px;
-  margin-top: 1px;
-}
-
-.choice-label {
-  flex: 1;
-  font-size: 0.92rem;
-  color: var(--text);
-}
-
-.choice.disabled { cursor: default; }
-
-.choice.correct-answer {
-  border-color: var(--success);
-  background: var(--success-bg);
-}
-
-.choice.correct-answer .choice-radio {
-  border-color: var(--success);
-  background: var(--success);
-}
-
-.choice.correct-answer .choice-radio::after {
-  background: white;
-  width: 8px;
-  height: 8px;
-}
-
-.choice.correct-answer .choice-letter { color: var(--success); }
-
-.choice.wrong-answer {
-  border-color: var(--danger);
-  background: var(--danger-bg);
-}
-
-.choice.wrong-answer .choice-radio {
-  border-color: var(--danger);
-  background: var(--danger);
-}
-
-.choice.wrong-answer .choice-radio::after {
-  background: white;
-  width: 8px;
-  height: 8px;
-}
-
-.choice.wrong-answer .choice-letter { color: var(--danger); }
-
-.choice.correct-answer::after {
-  content: '✓';
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--success);
-  font-weight: 800;
-  font-size: 1.1rem;
-}
-
-.choice.wrong-answer::after {
-  content: '✗';
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--danger);
-  font-weight: 800;
-  font-size: 1.1rem;
-}
-
-.explanation {
-  margin-left: 50px;
-  margin-top: 14px;
-  padding: 14px 16px;
-  background: var(--success-bg);
-  border-left: 3px solid var(--success);
-  border-radius: var(--radius-sm);
-  font-size: 0.88rem;
-  color: var(--text);
-  display: none;
-  animation: slideDown 0.3s ease;
-}
-
-.explanation.show { display: block; }
-
-.explanation strong {
-  color: var(--success);
-  font-weight: 700;
-  display: block;
-  margin-bottom: 4px;
-}
-
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.result-badge {
-  display: none;
-  margin-left: 50px;
-  margin-top: 10px;
-  padding: 5px 12px;
-  border-radius: 20px;
-  font-size: 0.78rem;
-  font-weight: 700;
-  width: fit-content;
-  align-items: center;
-  gap: 6px;
-}
-
-.result-badge.show { display: inline-flex; }
-.result-badge.ok { background: var(--success); color: white; }
-.result-badge.ko { background: var(--danger); color: white; }
-.result-badge.na { background: var(--warning); color: white; }
-
-/* ============================================================
-   MOBILE
-   ============================================================ */
-.mobile-nav-toggle {
-  display: none;
-  position: fixed;
-  top: 16px;
-  left: 16px;
-  z-index: 200;
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-md);
-  background: var(--surface);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--border-strong);
-  color: var(--text);
-  font-size: 20px;
-  cursor: pointer;
-  align-items: center;
-  justify-content: center;
-}
-
-.sidebar-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 90;
-}
-
-@media (max-width: 900px) {
-  .app { grid-template-columns: 1fr; }
-
-  .sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 280px;
-    z-index: 100;
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-    height: 100vh;
+  :root {
+    --bg: #f5f7fa;
+    --card: #ffffff;
+    --text: #1a202c;
+    --muted: #718096;
+    --border: #e2e8f0;
+    --primary: #3182ce;
+    --primary-dark: #2b6cb0;
+    --correct: #38a169;
+    --correct-bg: #f0fff4;
+    --wrong: #e53e3e;
+    --wrong-bg: #fff5f5;
+    --selected: #ebf8ff;
+    --selected-border: #3182ce;
   }
-
-  .sidebar.open { transform: translateX(0); }
-  .sidebar-overlay.open { display: block; }
-
-  .mobile-nav-toggle { display: flex; }
-
-  .main { padding: 76px 16px 60px; }
-
-  .choices, .explanation, .result-badge { margin-left: 0; }
-
-  .page-title { font-size: 1.4rem; }
-
-  .topbar { flex-direction: column; align-items: flex-start; }
-
-  .session-header { padding: 18px 20px; }
-
-  .question-card { padding: 18px; }
-}
-
-@media (max-width: 480px) {
-  .stat-value { font-size: 1.2rem; }
-  .q-text { font-size: 0.92rem; }
-  .choice-label { font-size: 0.85rem; }
-  .session-badge { width: 44px; height: 44px; font-size: 1.1rem; }
-}
-
-/* Scrollbar global */
-::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-track { background: var(--bg-0); }
-::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 5px; }
-::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 20px;
+  }
+  .container { max-width: 900px; margin: 0 auto; }
+  header {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    position: sticky;
+    top: 10px;
+    z-index: 100;
+  }
+  h1 { font-size: 1.5rem; margin-bottom: 8px; }
+  .subtitle { color: var(--muted); font-size: 0.9rem; }
+  .toolbar {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+    align-items: center;
+  }
+  button {
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-primary { background: var(--primary); color: white; }
+  .btn-primary:hover { background: var(--primary-dark); }
+  .btn-secondary {
+    background: var(--card);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { background: var(--bg); }
+  .score {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--primary);
+    margin-left: auto;
+  }
+  .session-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 32px 0 16px;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #3182ce, #2b6cb0);
+    color: white;
+    border-radius: 10px;
+  }
+  .question {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    border-left: 4px solid transparent;
+    transition: border-color 0.3s;
+  }
+  .question.correct { border-left-color: var(--correct); }
+  .question.wrong { border-left-color: var(--wrong); }
+  .question.unanswered { border-left-color: #cbd5e0; }
+  .q-num {
+    display: inline-block;
+    background: var(--primary);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+  }
+  .q-text { font-weight: 600; margin-bottom: 12px; font-size: 1rem; }
+  .choices { display: flex; flex-direction: column; gap: 8px; }
+  .choice {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .choice:hover { background: var(--bg); }
+  .choice input { margin-top: 4px; accent-color: var(--primary); cursor: pointer; }
+  .choice.selected {
+    background: var(--selected);
+    border-color: var(--selected-border);
+  }
+  .choice.correct-answer {
+    background: var(--correct-bg);
+    border-color: var(--correct);
+    border-width: 2px;
+  }
+  .choice.wrong-answer {
+    background: var(--wrong-bg);
+    border-color: var(--wrong);
+  }
+  .choice.disabled { cursor: default; }
+  .choice.disabled:hover { background: inherit; }
+  .label-letter {
+    font-weight: 700;
+    color: var(--muted);
+    min-width: 24px;
+  }
+  .explanation {
+    margin-top: 12px;
+    padding: 12px 16px;
+    background: #f0fff4;
+    border-left: 3px solid var(--correct);
+    border-radius: 6px;
+    font-size: 0.92rem;
+    color: #22543d;
+    display: none;
+  }
+  .explanation.show { display: block; }
+  .explanation strong { color: #276749; }
+  .badge-result {
+    display: none;
+    margin-top: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 4px;
+    width: fit-content;
+  }
+  .badge-result.show { display: inline-block; }
+  .badge-result.ok { background: var(--correct); color: white; }
+  .badge-result.ko { background: var(--wrong); color: white; }
+  .badge-result.na { background: #a0aec0; color: white; }
+  .footer-note {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin: 40px 0 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+  @media (max-width: 600px) {
+    body { padding: 10px; }
+    header { padding: 16px; }
+    .score { margin-left: 0; width: 100%; text-align: center; }
+  }
 </style>
 </head>
 <body>
-
-<button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Menu">☰</button>
-<div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-<div class="app">
-
-  <!-- SIDEBAR -->
-  <aside class="sidebar" id="sidebar">
-    <div class="brand">
-      <div class="brand-logo">
-        <div class="brand-icon">🎯</div>
-        <div>
-          <div class="brand-title">QCM Master</div>
-          <div class="brand-sub">125 questions</div>
-        </div>
-      </div>
+<div class="container">
+  <header>
+    <h1>📝 QCM — 125 Questions</h1>
+    <p class="subtitle">Cochez vos réponses, puis affichez les corrections.</p>
+    <div class="toolbar">
+      <button class="btn-primary" id="btn-show">✅ Afficher les corrections</button>
+      <button class="btn-secondary" id="btn-reset">🔄 Réinitialiser</button>
+      <span class="score" id="score">— / 125</span>
     </div>
+  </header>
 
-    <div class="nav-section-title">Sessions</div>
-    <ul class="nav-list" id="navList"></ul>
+  <div id="questions-container"></div>
 
-    <div class="sidebar-footer">
-      <div class="progress-label">
-        <span>Progression</span>
-        <span id="progressPct">0%</span>
-      </div>
-      <div class="progress-bar">
-        <div class="progress-fill" id="progressFill"></div>
-      </div>
-      <button class="theme-toggle" id="themeToggle">
-        <span id="themeIcon">🌙</span>
-        <span id="themeLabel">Mode sombre</span>
-      </button>
-    </div>
-  </aside>
+  <p class="footer-note">QCM généré à partir du fichier source — Bonne révision !</p>
+</div>
 
-  <!-- MAIN -->
-  <main class="main">
-
-    <div class="topbar">
-      <div>
-        <h1 class="page-title" id="pageTitle">Session 01 — Fondamentaux</h1>
-        <p class="page-subtitle" id="pageSubtitle">Cochez vos réponses puis affichez la correction.</p>
-      </div>
-      <div class="topbar-actions">
-        <button class="btn btn-ghost" id="btnReset">🔄 Réinitialiser</button>
-        <button class="btn btn-primary" id="btnCorrect">✅ Afficher les corrections</button>
-      </div>
-    </div>
-
-    <di
+<script>
+/* ============================================================
+   DONNÉES : tableau de questions
+   Chaque question : { q: "texte", choices: ["A) ...", ...], correct: index, exp: "explication" }
+   ============================================================ */
+const SESSIONS = [
+  {
+    title: "Sessions 00 et 01",
+    questions: [
+      { q: "Quelle(s) version(s) de Node.js sont validées pour le cours ?",
+        choices: ["A) v23", "B) v25", "C) v24 ou v22", "D) N'importe laquelle"],
+        correct: 2,
+        exp: "Le cours valide les versions LTS stables (v24 ou v22), pas les versions expérimentales." },
+      { q: "Que fait Metro ?",
+        choices: ["A) Il assemble le JavaScript et le sert à Expo Go", "B) Il compile l'APK", "C) Il exécute le code natif", "D) Il vérifie les types"],
+        correct: 0,
+        exp: "Metro est le bundler JavaScript de React Native/Expo ; il ne compile pas d'APK." },
+      { q: "Une bibliothèque npm contient son propre code natif absent d'Expo Go. Que se passe-t-il ?",
+        choices: ["A) Expo Go le compile", "B) npm installe une version JS", "C) Ça marche, plus lentement", "D) Module natif introuvable : erreur"],
+        correct: 3,
+        exp: "Expo Go ne contient pas tous les modules natifs ; un module absent provoque une erreur." },
+      { q: "Une erreur de type TypeScript :",
+        choices: ["A) bloque l'affichage dans Expo Go", "B) apparaît seulement avec npx tsc --noEmit, l'app tourne quand même", "C) plante Metro", "D) est détectée par Fast Refresh"],
+        correct: 1,
+        exp: "TypeScript est effacé à l'exécution ; les erreurs de type n'empêchent pas Metro de servir l'app." },
+      { q: "Sur iPhone, Expo Go n'ouvre le projet que si :",
+        choices: ["A) le PC est en Ethernet", "B) le PC et l'app utilisent le même compte Expo", "C) Node est en v25", "D) le tunnel est activé"],
+        correct: 1,
+        exp: "Expo Go sur iPhone exige le même compte Expo pour ouvrir le projet (en mode LAN/tunnel)." },
+      { q: "Que signifie email?: string ?",
+        choices: ["A) string | null", "B) string obligatoire", "C) any", "D) string | undefined"],
+        correct: 3,
+        exp: "Le ? rend la propriété optionnelle, donc son type inclut undefined." },
+      { q: "Si found est undefined, que vaut found?.email?.length ?? 0 ?",
+        choices: ["A) 0", "B) erreur", "C) undefined", "D) null"],
+        correct: 0,
+        exp: "?. court-circuite sur undefined, puis ?? 0 renvoie 0." },
+      { q: "count vaut 0. Un onPress exécute deux fois setCount(count + 1). Après le rendu, count vaut :",
+        choices: ["A) 0", "B) 2", "C) 1", "D) 3"],
+        correct: 2,
+        exp: "count est capturé à 0 dans les deux appels ; setCount(0+1) deux fois = 1 (pas de mise à jour cumulative)." },
+      { q: "Pour incrémenter selon l'ancienne valeur, on écrit :",
+        choices: ["A) setCount(count++)", "B) count = count + 1", "C) setCount = count + 1", "D) setCount(v => v + 1)"],
+        correct: 3,
+        exp: "La forme fonctionnelle utilise la valeur la plus récente." },
+      { q: "useEffect(() => {...}) sans tableau de dépendances s'exécute :",
+        choices: ["A) une fois", "B) jamais", "C) après chaque rendu", "D) seulement au démontage"],
+        correct: 2,
+        exp: "Sans tableau de dépendances, l'effet s'exécute à chaque rendu." },
+      { q: "useEffect(..., []) s'exécute :",
+        choices: ["A) après le premier rendu seulement", "B) à chaque rendu", "C) jamais", "D) à chaque changement de props"],
+        correct: 0,
+        exp: "Le tableau vide [] signifie « une seule fois au montage »." },
+      { q: "Quand contactId passe de 1 à 2 avec [contactId] en dépendance :",
+        choices: ["A) effet(2) puis nettoyage(1)", "B) nettoyage(1) puis effet(2)", "C) seulement effet(2)", "D) seulement nettoyage(1)"],
+        correct: 1,
+        exp: "React nettoie l'effet précédent avant d'exécuter le nouvel effet." },
+      { q: "Quelle règle est enfreinte ? if (contact) { const [fav, setFav] = useState(false); }",
+        choices: ["A) hook sans préfixe use", "B) hook non async", "C) hook appelé dans un if", "D) aucune"],
+        correct: 2,
+        exp: "Les hooks doivent être appelés au niveau racine, jamais conditionnellement." },
+      { q: "src/app/(tabs)/settings.tsx répond à l'URL :",
+        choices: ["A) /settings", "B) /(tabs)/settings", "C) /tabs/settings", "D) aucune"],
+        correct: 0,
+        exp: "Les parenthèses (tabs) sont un groupe de routes qui n'apparaît pas dans l'URL." },
+      { q: "Comment lire l'id dans contact/[id].tsx ?",
+        choices: ["A) useRoute()", "B) props.id", "C) window.location", "D) useLocalSearchParams<{id: string}>()"],
+        correct: 3,
+        exp: "C'est l'API Expo Router pour lire les paramètres dynamiques." },
+      { q: "Le paramètre de route id est de type :",
+        choices: ["A) number", "B) string", "C) any", "D) selon le fichier"],
+        correct: 1,
+        exp: "Les paramètres de route sont toujours des chaînes." },
+      { q: "Pourquoi current.push(id) ne met-il pas l'écran à jour ?",
+        choices: ["A) push est interdit", "B) la référence du tableau ne change pas", "C) push est asynchrone", "D) le tableau est en lecture seule"],
+        correct: 1,
+        exp: "React compare les références ; push mute sans changer la référence." },
+      { q: "Rôle de keyExtractor dans FlatList :",
+        choices: ["A) trier", "B) filtrer", "C) paginer", "D) donner une identité stable à chaque ligne"],
+        correct: 3,
+        exp: "keyExtractor fournit une clé unique pour le rendu des items." },
+      { q: "Équivalent React Native de LazyColumn :",
+        choices: ["A) FlatList", "B) ScrollView", "C) Column", "D) View"],
+        correct: 0,
+        exp: "FlatList est l'équivalent React Native de LazyColumn (liste virtualisée)." },
+      { q: "Une chaîne placée directement dans un <View> provoque :",
+        choices: ["A) rien", "B) un texte invisible", "C) l'erreur « Text strings must be rendered within a <Text> »", "D) un warning TS"],
+        correct: 2,
+        exp: "En RN, tout texte doit être dans un <Text>." },
+      { q: "La liste filtrée d'un champ de recherche doit être :",
+        choices: ["A) stockée dans un second useState", "B) calculée dans un useEffect", "C) stockée dans SQLite", "D) calculée pendant le rendu à partir du texte saisi"],
+        correct: 3,
+        exp: "Pas besoin d'état dérivé ; on filtre à la volée." },
+      { q: "Avec React Compiler (SDK 57), le cours demande :",
+        choices: ["A) useMemo partout", "B) de les remplacer par useRef", "C) ni useMemo ni useCallback", "D) de désactiver le compilateur"],
+        correct: 2,
+        exp: "React Compiler mémoïse automatiquement." },
+      { q: "export default est réservé :",
+        choices: ["A) aux fichiers de src/app (routes)", "B) aux composants de src/components", "C) aux hooks", "D) aux dépôts"],
+        correct: 0,
+        exp: "export default est réservé aux routes dans Expo Router." },
+      { q: "Le dossier (tabs) :",
+        choices: ["A) ajoute /tabs à l'URL", "B) regroupe des écrans sans apparaître dans l'URL", "C) est obligatoire", "D) crée un Drawer"],
+        correct: 1,
+        exp: "Les parenthèses masquent le segment dans l'URL." },
+      { q: "Les props d'un composant sont :",
+        choices: ["A) modifiables par l'enfant", "B) globales", "C) en lecture seule, les données descendent", "D) toujours optionnelles"],
+        correct: 2,
+        exp: "Les props sont immuables côté enfant (flux unidirectionnel)." }
+    ]
+  },
+  {
+    title: "Session 02 : SQLite",
+    questions: [
+      { q: "Pour 3 000 dépenses filtrées par catégorie et totalisées par mois, le meilleur stockage est :",
+        choices: ["A) une table SQLite avec WHERE et SUM", "B) un tableau JSON dans AsyncStorage", "C) un useState racine", "D) SecureStore"],
+        correct: 0,
+        exp: "SQLite est fait pour filtrer/agréger efficacement de gros volumes." },
+      { q: "execAsync sert à :",
+        choices: ["A) une écriture paramétrée", "B) lire une ligne", "C) lire plusieurs lignes", "D) plusieurs instructions sans paramètre (schéma, PRAGMA)"],
+        correct: 3,
+        exp: "execAsync exécute du SQL brut sans paramètres." },
+      { q: "runAsync renvoie :",
+        choices: ["A) un tableau", "B) lastInsertRowId et changes", "C) T | null", "D) rien"],
+        correct: 1,
+        exp: "runAsync renvoie ces métadonnées d'écriture." },
+      { q: "getFirstAsync<T> renvoie :",
+        choices: ["A) T[]", "B) T | null", "C) Promise<void>", "D) number"],
+        correct: 1,
+        exp: "getFirstAsync renvoie la première ligne ou null." },
+      { q: "const rows = db.getAllAsync<Expense>(...) sans await : rows.length donne :",
+        choices: ["A) le nombre de lignes", "B) 0", "C) undefined sans erreur", "D) une erreur TS : rows est une Promise"],
+        correct: 3,
+        exp: "Sans await, rows est une Promise ; TS signale l'erreur." },
+      { q: "Pourquoi utiliser ? dans le SQL ?",
+        choices: ["A) éviter l'injection SQL : les valeurs sont des données", "B) c'est plus rapide", "C) obligatoire pour SELECT", "D) pour typer les colonnes"],
+        correct: 0,
+        exp: "Les ? séparent code et données (requêtes paramétrées)." },
+      { q: "PRAGMA user_version vaut pour une base neuve :",
+        choices: ["A) 1", "B) null", "C) 0", "D) -1"],
+        correct: 2,
+        exp: "Une base neuve a user_version = 0." },
+      { q: "CREATE TABLE IF NOT EXISTS :",
+        choices: ["A) met à jour le schéma", "B) supprime l'ancienne table", "C) crée une migration", "D) ne fait rien si la table existe, même si la définition a changé"],
+        correct: 3,
+        exp: "IF NOT EXISTS n'altère pas une table existante." },
+      { q: "Téléphone en version 1 (12 lignes), code en version 2. À l'ouverture :",
+        choices: ["A) table recréée vide", "B) la marche 0→1 rejoue", "C) seule la marche 1→2 s'exécute, les 12 lignes sont conservées", "D) rien"],
+        correct: 2,
+        exp: "Les migrations s'exécutent séquentiellement à partir de la version actuelle." },
+      { q: "Les marches de migration s'écrivent avec :",
+        choices: ["A) des if successifs", "B) des else if", "C) un switch unique", "D) une boucle"],
+        correct: 0,
+        exp: "Le cours utilise des if (version === N) successifs." },
+      { q: "Une marche déjà publiée :",
+        choices: ["A) se modifie librement", "B) ne se modifie plus : on en ajoute une", "C) se supprime", "D) se réécrit à chaque version"],
+        correct: 1,
+        exp: "Une migration publiée est immuable." },
+      { q: "Trois INSERT dans withTransactionAsync : les 2 premiers réussissent, le 3e lève une erreur. Résultat :",
+        choices: ["A) 2 lignes", "B) 3 lignes", "C) 0 ligne (ROLLBACK)", "D) 1 ligne"],
+        correct: 2,
+        exp: "Une transaction annule tout en cas d'erreur." },
+      { q: "SQLiteProvider avec onInit :",
+        choices: ["A) ouvre la base, exécute onInit, puis affiche les enfants", "B) affiche d'abord les enfants", "C) ne crée pas de fichier", "D) est facultatif"],
+        correct: 0,
+        exp: "onInit s'exécute avant le rendu des enfants." },
+      { q: "useSQLiteContext appelé hors SQLiteProvider :",
+        choices: ["A) base vide", "B) ça marche", "C) fallback mémoire", "D) erreur « must be used within a <SQLiteProvider> »"],
+        correct: 3,
+        exp: "Le hook exige le contexte du provider." },
+      { q: "Un écran ne doit jamais contenir :",
+        choices: ["A) de JSX", "B) de SQL", "C) de useState", "D) de style"],
+        correct: 1,
+        exp: "Le SQL doit rester dans les dépôts, pas dans les écrans." },
+      { q: "Le dépôt (expenseRepo) est l'équivalent de :",
+        choices: ["A) un ViewModel", "B) un DAO Room", "C) un NavHost", "D) un Composable"],
+        correct: 1,
+        exp: "Le dépôt est l'équivalent d'un DAO (accès aux données)." },
+      { q: "Le hook useExpenses est l'équivalent de :",
+        choices: ["A) un DAO", "B) une migration", "C) un Provider SQL", "D) un ViewModel"],
+        correct: 3,
+        exp: "Le hook gère l'état et la logique de présentation." },
+      { q: "Deux écrans qui appellent useExpenses :",
+        choices: ["A) ont chacun leur propre état", "B) partagent la même liste", "C) partagent le cache SQLite en mémoire", "D) provoquent une erreur"],
+        correct: 0,
+        exp: "Chaque appel de hook crée son propre état local." },
+      { q: "useIsFocused dans les dépendances de l'effet sert à :",
+        choices: ["A) empêcher le chargement", "B) fermer la base", "C) relire la base à chaque retour sur l'écran", "D) gérer le clavier"],
+        correct: 2,
+        exp: "useIsFocused déclenche le rechargement au focus." },
+      { q: "La fonction passée à useEffect ne peut pas être async car :",
+        choices: ["A) c'est lent", "B) TS l'interdit", "C) Metro l'interdit", "D) elle doit renvoyer rien ou la fonction de nettoyage, pas une Promise"],
+        correct: 3,
+        exp: "useEffect ne peut pas être async directement." },
+      { q: "Rôle de isCurrent dans useExpenses :",
+        choices: ["A) compter les rendus", "B) vérifier la connexion", "C) ignorer la réponse d'un ancien effet nettoyé", "D) gérer le focus"],
+        correct: 2,
+        exp: "Le flag isCurrent évite les mises à jour obsolètes." },
+      { q: "Number('12,5') vaut :",
+        choices: ["A) NaN", "B) 12.5", "C) 12", "D) 0"],
+        correct: 0,
+        exp: "Number('12,5') échoue à cause de la virgule." },
+      { q: "parseFloat('12,5') vaut :",
+        choices: ["A) 12.5", "B) 12", "C) NaN", "D) erreur"],
+        correct: 1,
+        exp: "parseFloat('12,5') s'arrête à la virgule et renvoie 12." },
+      { q: "Dans un formulaire, l'état du montant doit être :",
+        choices: ["A) un number", "B) un boolean", "C) un string, converti à la validation", "D) un Date"],
+        correct: 2,
+        exp: "On garde le texte brut puis on convertit à la validation." },
+      { q: "keyboardType=\"decimal-pad\" :",
+        choices: ["A) choisit seulement le clavier, sans valider", "B) valide la saisie", "C) convertit en nombre", "D) bloque la virgule"],
+        correct: 0,
+        exp: "keyboardType ne fait qu'afficher un clavier adapté." },
+      { q: "SELECT SUM(amount) sans aucune ligne correspondante renvoie :",
+        choices: ["A) 0", "B) une erreur", "C) un tableau vide", "D) NULL (d'où ?? 0)"],
+        correct: 3,
+        exp: "SUM sur zéro ligne renvoie NULL." },
+      { q: "Promise.all([repo.all(), repo.total()]) :",
+        choices: ["A) exécute en série", "B) lance les deux requêtes ensemble et attend les deux", "C) annule la 2e", "D) ne garde que la 1re"],
+        corr
